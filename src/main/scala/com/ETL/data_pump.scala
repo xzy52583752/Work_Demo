@@ -115,7 +115,7 @@ object data_pump {
 
     val df = sQLContext.createDataFrame(rowRDD,SchemaUtils.structtype)
 
-    df.write.parquet(outputPath)
+    df.coalesce(1).write.parquet(outputPath)
     sc.stop()
 
 
