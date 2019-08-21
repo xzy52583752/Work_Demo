@@ -11,7 +11,7 @@ object data_pump {
       sys.exit()
     }
     val Array(inputPath,outputPath) = args
-    val conf =new SparkConf().setAppName(this.getClass.getName).setMaster("local[2]")
+    val conf =new SparkConf().setAppName(this.getClass.getName).setMaster("local[*]")
       .set("spark.serializer","org.apache.spark.serializer.KryoSerializer")
 
     val sc = new SparkContext(conf)
