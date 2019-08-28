@@ -4,7 +4,7 @@ import java.util.Properties
 
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.{SQLContext, SaveMode}
 
 /**
   * 需求指标二 统计地域各省市分布情况
@@ -33,14 +33,15 @@ object proCity {
     df.registerTempTable("log")
     // 指标统计
     val result = sQLContext.sql("select provincename,cityname,count(*) from log group by provincename,cityname")
+    result.show()
 
-    //result.coalesce(1).write.partitionBy("provincename","cityname").json(outputPath)
+    result.coalesce(1).write.partitionBy("provincename","cityname").json(outputPath)
     // 加载配置文件  需要使用对应的依赖
     val load = ConfigFactory.load()
     val prop = new Properties()
     prop.setProperty("user",load.getString("jdbc.user"))
     prop.setProperty("password",load.getString("jdbc.password"))
-    result.write.mode("append").jdbc(load.getString("jdbc.url"),load.getString("jdbc.TableName"),prop)
+    result.write.mode(SaveMode.Append).jdbc(load.getString("jdbc.url"),load.getString("jdbc.TableName"),prop)
     sc.stop()
   }
 }
